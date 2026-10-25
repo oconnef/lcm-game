@@ -59,8 +59,8 @@ async def main():
             await walk('a',1120);await walk('s',1000);await act()
             assert await page.locator('#location').inner_text()=='MOTEL OFFICE'
             await walk('a',1510);await walk('w',800);await act()
-            assert 'completed this chapter' in await page.locator('#dialogue').inner_text()
-            assert 'Chapter complete' in await page.locator('#mission').inner_text()
+            assert 'left door' in await page.locator('#dialogue').inner_text()
+            assert 'Visit the diner' in await page.locator('#mission').inner_text()
             await page.locator('#music').click();assert await page.locator('#music').get_attribute('aria-pressed')=='true'
             await page.locator('#music').click()
             await page.locator('#pause').click();assert await page.locator('#paused').is_visible()

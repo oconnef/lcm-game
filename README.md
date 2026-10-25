@@ -1,6 +1,6 @@
 # Last Chance Motel — Night Shift
 
-A browser-only playable first chapter: check in at the office, enter Room 06, solve the registration-slip puzzle, and return to Bobbi with the diner lead. The current game starts at **`index.html`**. The older HTML files under `source/` remain reference prototypes.
+A browser-only game slice: check in, investigate Room 06, solve Betty’s diner puzzle, and evade Harold to unlock the chapel gate. The current game starts at **`index.html`**. The older HTML files under `source/` remain reference prototypes.
 
 ## Play locally
 
@@ -22,7 +22,19 @@ Move with WASD / arrows or hold the on-screen direction buttons. Press E / Space
 4. Walk to the drawer at the right, interact, and enter **0317**. Collect the diner voucher.
 5. Return through the door at the bottom of the room. Talk to Bobbi to finish the chapter.
 
-The diner and enemy encounters are future chapters. This slice is a short puzzle sequence, not the full 15–25-minute game.
+## Continue into the diner and courtyard
+
+Existing saved progress is retained. If you already finished Room 06, show Bobbi the voucher, then use the office’s left-hand DINER door.
+
+6. Talk to Betty at the diner counter. Read the order slip at booth 01 on the left.
+7. Play **ROSE → MOON → SUN** on the jukebox at the lower right. A wrong sequence can be retried without a penalty.
+8. Take the brass token to the register at the counter’s right end. Betty gives you the chapel key.
+9. Use the courtyard door at the lower right. Harold patrols the right-hand path: his sight cone and status text warn you before he chases.
+10. Use the laundry hiding place, keep the pool/hedges between you and Harold, and unlock the chapel gate. Retreating to the diner restores health. Losing all three hearts returns you there with your puzzle progress intact.
+
+The mission log keeps discovered clues. Hiding stops movement; interact again to leave cover. Pause and dialogs freeze patrols. Enemy positions restart on scene entry or reload, while clues, keys, health and player position are saved.
+
+The chapel interior, graveyard, Monster and full escape ending are still future work. This slice is not yet the full 15–25-minute game.
 
 ## Verify changes
 
@@ -32,9 +44,10 @@ No build or package installation is required to play. For automated checks:
 node --test tests/night_shift.test.mjs
 # With the server above running, Python Playwright installed, and /usr/bin/chromium available:
 python3 tests/night_shift_browser.py
+python3 tests/diner_browser.py
 ```
 
-The unit tests cover progression gates, collisions, nearby interaction selection, and storage recovery. Browser tests complete the chapter using desktop keyboard and mobile on-screen controls, including wrong codes, reloads, music, pause, and restart. Browser screenshots are written to `/tmp/night-shift-desktop.png` and `/tmp/night-shift-mobile.png`.
+The unit tests cover progression gates, collisions, nearby interaction selection, storage recovery/migration, enemy sightlines, hiding, damage cooldown, and checkpoint recovery. Browser tests complete the chapter using desktop keyboard and mobile on-screen controls, including wrong codes, reloads, music, pause, and restart. Browser screenshots are written to `/tmp/night-shift-desktop.png` and `/tmp/night-shift-mobile.png`.
 
 ## Publish the game
 
@@ -42,7 +55,7 @@ Upload `index.html` and the complete `source/night-shift/` directory together to
 
 ## Code layout
 
-`source/night-shift/` contains separate modules for state/progression/save, scene definitions/collision, input, canvas rendering/dialogue, generated audio, and runtime/UI wiring. All game visuals are drawn locally with Canvas; no reference photos or screenplay text are bundled into the playable chapter.
+`source/night-shift/` contains separate modules for state/progression/save, scene definitions/collision, input, canvas rendering/dialogue, generated audio, and runtime/UI wiring. The enemy module handles patrol, detection, chase, damage and recovery. All game visuals are drawn locally with Canvas; no reference photos or screenplay text are bundled into the playable chapter.
 
 ---
 
