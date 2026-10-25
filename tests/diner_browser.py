@@ -46,9 +46,9 @@ async def main():
    before=await page.locator('#health').inner_text();await page.wait_for_timeout(500);assert await page.locator('#health').inner_text()==before
    await page.locator('#pause').click();await act()
    await walk('d',1400);await walk('w',880);await walk('d',400);await act()
-   assert 'Courtyard cleared' in await page.locator('#mission').inner_text()
+   assert 'Read the wedding score' in await page.locator('#mission').inner_text()
    await page.reload();await page.wait_for_timeout(200)
-   assert 'Courtyard cleared' in await page.locator('#mission').inner_text()
+   assert 'Read the wedding score' in await page.locator('#mission').inner_text()
    await page.locator('.journal summary').click();assert await page.locator('#journal').is_visible()
    await page.screenshot(path=f'/tmp/diner-{"mobile" if mobile else "desktop"}.png',full_page=True)
    assert not errors,errors

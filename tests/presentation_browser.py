@@ -6,12 +6,14 @@ async def main():
  async with async_playwright() as pw:
   browser=await pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
   for mobile in [False,True]:
-   for scene in ['office','room','parking','diner','yard']:
+   for scene in ['office','room','parking','diner','yard','chapel','graveyard','garage']:
     page=await browser.new_page(viewport={'width':390,'height':844} if mobile else {'width':1280,'height':1000},has_touch=mobile)
     errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
     state={'scene':scene,'x':320,'y':240 if scene=='diner' else 370,'key':True,'clue':True,'voucher':True,'completed':True,'betty':False,'order':False,'token':False,'chapelKey':False,'escaped':False,'hp':3}
     if scene=='yard':state.update(betty=True,order=True,token=True,chapelKey=True,x=70,y=380)
+    if scene in ['chapel','graveyard','garage']:state.update(betty=True,order=True,token=True,chapelKey=True,escaped=True)
+    if scene in ['graveyard','garage']:state.update(score=True,crank=True,graveyardUnlocked=True,x=70 if scene=='graveyard' else 320,y=385 if scene=='graveyard' else 380)
     await page.add_init_script('if(!sessionStorage.getItem("presentationSeeded")){localStorage.setItem("lcm-night-shift-v1",'+json.dumps(json.dumps(state))+');sessionStorage.setItem("presentationSeeded","1");}')
     await page.goto('http://127.0.0.1:8000/')
     await page.wait_for_timeout(200)
