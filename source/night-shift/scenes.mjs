@@ -12,3 +12,5 @@ scenes.escape={name:'DESERT ROAD · DAWN',spawn:{x:320,y:360},furniture:[],objec
 export function collides(scene,x,y) {return x<26||x>614||y<96||y>420||scenes[scene].furniture.some(r=>x+10>r.x&&x-10<r.x+r.w&&y+10>r.y&&y-10<r.y+r.h);}
 export function move(s,dx,dy) {if(!collides(s.scene,s.x+dx,s.y))s.x+=dx;if(!collides(s.scene,s.x,s.y+dy))s.y+=dy;}
 export function nearby(s) {return scenes[s.scene].objects.filter(o=>Math.hypot(o.x-s.x,o.y-s.y)<58).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0];}
+
+export function playerSpeed(state){return state.carKeys?185:155;}

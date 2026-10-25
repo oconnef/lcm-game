@@ -20,7 +20,7 @@ async def navigate(page,x,y,mobile):
    if mobile:
     button=page.locator('[data-move='+direction+']');await button.scroll_into_view_if_needed();r=await button.bounding_box();await page.mouse.move(r['x']+r['width']/2,r['y']+r['height']/2);await page.mouse.down()
    else:await page.keyboard.down(key)
-   await page.clock.run_for(round(abs(delta)/155*1000))
+   await page.clock.run_for(round(abs(delta)/(185 if current['carKeys'] else 155)*1000))
    if mobile:await page.mouse.up()
    else:await page.keyboard.up(key)
    check=await snapshot(page)

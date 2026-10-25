@@ -1,5 +1,5 @@
 import {freshState,objective,interact,load,save} from './state.mjs';
-import {scenes,nearby,move,collides} from './scenes.mjs';
+import {scenes,nearby,move,collides,playerSpeed} from './scenes.mjs';
 import {input} from './input.mjs';
 import {portrait} from './art.mjs';
 import {render} from './render.mjs';
@@ -16,7 +16,7 @@ const sound=music($('music'),()=>state.won?'won':state.scene);
 function persist(){ $('saveStatus').textContent=save(storage,state)?'Progress saved on this browser':'Saving unavailable — progress lasts this session';dirty=false; }
 function blocked(){return paused||state.won||!!document.querySelector('dialog[open]');}
 function hud(){
- $('location').textContent=scenes[state.scene].name;$('mission').textContent=objective(state);
+ $('escapeWatch').hidden=!(state.won&&state.scene==='escape');$('location').textContent=scenes[state.scene].name;$('mission').textContent=objective(state);
  $('inventory').textContent=[state.key?'Room 06 key':'',state.voucher?'Diner voucher':'',state.token?'Brass token':'',state.chapelKey?'Chapel key':'',state.crank?'Gate crank':'',state.fuse?'Winch fuse':'',state.carKeys?'Cadillac keys':'',state.garageReward&&!state.flareUsed?'Emergency flare':''].filter(Boolean).join(' · ')||'Empty';
  // Retain the first clue in inventory for existing saves and the walkthrough.
  if(state.clue)$('inventory').textContent+=' · Arrival: 03:17';
@@ -71,7 +71,7 @@ function frame(t){
  const dt=Math.min(.04,(t-last)/1000||0);last=t;motion.time=t;motion.walking=false;
  if(!blocked()){
   const v=controls.vector();motion.walking=!!(v.x||v.y)&&!hidden;
-  if(motion.walking){motion.facing=Math.abs(v.x)>Math.abs(v.y)?(v.x>0?'right':'left'):(v.y>0?'down':'up');move(state,v.x*155*dt,v.y*155*dt);dirty=true;}
+  if(motion.walking){motion.facing=Math.abs(v.x)>Math.abs(v.y)?(v.x>0?'right':'left'):(v.y>0?'down':'up');move(state,v.x*playerSpeed(state)*dt,v.y*playerSpeed(state)*dt);dirty=true;}
   const previous=state.scene,deaths=state.deaths,warning=pursuitActive(state)?updatePursuit(state,chase??=startPursuit(state),dt):updateEnemy(state,enemy,dt,hidden);
   if(enemy.mode==='chase'&&lastMode!=='chase')sound.cue();lastMode=enemy.mode;
   if(warning){say(warning);if(previous!==state.scene)resetActors();hud();persist();if(state.deaths>deaths)outcome(false);}

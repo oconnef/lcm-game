@@ -41,7 +41,7 @@ The mission log keeps discovered clues. Hiding stops movement; interact again to
 13. Search the tool locker in the **northwest** for the winch fuse. Fit it to the **east-side winch control**, then recover the Cadillac keys from the **northeast key box**.
 14. The Monster patrols the wrecks and follows paths around solid obstacles. Watch its sight cone and warnings. The blue tarps at the north and south central gaps are hiding places. Keep moving when spotted and break line of sight.
 15. **Optional garage:** read the service plate near the southeast wrecks, then enter the garage. The locker asks for your room number followed by your arrival minute: **0617**. It gives first aid and a single flare. Use FLARE in the graveyard to hold the Monster back for eight seconds. This detour is not required to finish.
-16. Return through the west gate, retreat to the diner, pass through reception, and leave for the parking lot. Use the **pink Cadillac** to escape. **Taking the keys triggers a fast pursuit by both Harold and the Monster through every scene and door.** Run without stopping: hiding does not work during this escape, and the diner/chapel no longer restore health. A saved flare can hold both pursuers back for eight seconds, including indoors. Pause and open dialogs still freeze play. Room 07 stays locked even with the car keys.
+16. Return through the west gate, retreat to the diner, pass through reception, and leave for the parking lot. Use the **pink Cadillac** to escape. The desert-road view includes a clickable rent/buy link at the horizon, in addition to the ending dialog link. **Taking the keys triggers a fast pursuit by both Harold and the Monster through every scene and door.** Taking the keys also boosts the player from 155 to 185 pixels/second (about 19% faster); Harold runs at 180 and the Monster at 195. Run without stopping: hiding does not work during this escape, and the diner/chapel no longer restore health. A saved flare can hold both pursuers back for eight seconds, including indoors. Pause and open dialogs still freeze play. Room 07 stays locked even with the car keys.
 
 Before taking the keys, getting caught shows a retry screen and returns you to the diner (Harold) or chapel (Monster), with health restored and every puzzle item retained. During the final pursuit, a catch returns you to the west courtyard gate with your car keys retained; the chase resumes on retry. Music/notes are opt-in; both puzzles can be solved silently. Reloading resumes progress, including the completed escape ending. Restart clears the current save only after confirmation.
 
@@ -65,6 +65,7 @@ python3 tests/full_game_browser.py
 python3 tests/checkpoint_browser.py
 python3 tests/pursuit_browser.py
 python3 tests/flare_keyboard_browser.py
+python3 tests/escape_updates_browser.py
 python3 tests/audio_browser.py
 ```
 

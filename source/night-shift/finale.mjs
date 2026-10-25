@@ -39,7 +39,7 @@ export function finaleInteract(s,id,code=''){
   s.winchPowered=true;return 'YOU|The fuse fits. The winch groans and lifts the wreck. The Cadillac’s key box is clear now, a little farther north.';
  case 'keyBox':
   if(!s.winchPowered)return 'YOU|A wreck pins the key box shut. The winch control is just south of here.';
-  s.carKeys=true;return 'YOU|Cadillac keys! Harold and the Monster heard the winch. They are coming fast, and they will follow me through every door. No time to hide. Run! Return through the west gate, retreat through the diner and office, then use the pink Cadillac in the parking lot.';
+  s.carKeys=true;return 'YOU|Cadillac keys! Adrenaline kicks in—I can run faster now. Harold and the Monster heard the winch. They are coming fast, and they will follow me through every door. No time to hide. Run! Return through the west gate, retreat through the diner and office, then use the pink Cadillac in the parking lot.';
  case 'plate':s.garageClue=true;return 'YOU|An old service plate: “Garage locker: take the room number first, then the arrival minute.” My room registration has both. A flare icon is scratched beside the numbers.';
  case 'garageDoor':enter(s,'garage',320,380);return 'YOU|A forgotten garage. The workbench locker has a four-digit padlock. I can leave without opening it; the Cadillac keys are all I need to escape.';
  case 'garageExit':enter(s,'graveyard',570,380);return 'YOU|Back among the wrecks. Watch the gaps between the cars.';
