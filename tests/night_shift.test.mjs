@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {freshState,interact,load,save,SAVE_KEY,objective} from '../source/night-shift/state.mjs';
+import {move,collides,nearby} from '../source/night-shift/scenes.mjs';
+test('check-in gates room entry and room exit preserves key',()=>{const s=freshState();interact(s,'officeDoor');assert.equal(s.scene,'office');interact(s,'bobbi');interact(s,'officeDoor');assert.equal(s.scene,'room');interact(s,'roomDoor');assert.equal(s.scene,'office');assert.ok(s.key);});
+test('drawer requires clue and correct code',()=>{const s=freshState();interact(s,'bobbi');interact(s,'drawer','0317');assert.equal(s.voucher,false);interact(s,'slip');interact(s,'drawer','1234');assert.equal(s.voucher,false);interact(s,'drawer','0317');assert.equal(s.voucher,true);assert.match(objective(s),/Return to Bobbi/);assert.match(interact(s,'bobbi'),/completed this chapter/);assert.ok(s.completed);assert.match(objective(s),/Chapter complete/);});
+test('office walls and furniture block movement',()=>{assert.ok(collides('office',10,200));assert.ok(collides('office',200,150));const s={...freshState(),x:200,y:195};move(s,0,-10);assert.equal(s.y,195);move(s,10,0);assert.equal(s.x,210);});
+test('room bed, table, drawer and bathroom are solid',()=>{for(const [x,y] of [[100,180],[320,170],[500,180],[500,270]])assert.ok(collides('room',x,y));assert.ok(!collides('room',320,340));});
+test('only nearby objects can be selected',()=>{const s=freshState();assert.equal(nearby(s),undefined);s.x=285;s.y=220;assert.equal(nearby(s).id,'bobbi');});
+test('save roundtrip retains puzzle progression',()=>{let value;const storage={setItem:(k,v)=>{assert.equal(k,SAVE_KEY);value=v;},getItem:()=>value};const s=freshState();interact(s,'bobbi');interact(s,'officeDoor');interact(s,'slip');interact(s,'drawer','0317');assert.ok(save(storage,s));assert.deepEqual(load(storage),s);});
+test('invalid, corrupt and unavailable storage recover safely',()=>{for(const value of ['bad','null',JSON.stringify({...freshState(),scene:'invalid'}),JSON.stringify({...freshState(),key:false,clue:true})])assert.deepEqual(load({getItem:()=>value}),freshState());assert.deepEqual(load({getItem:()=>{throw Error();}}),freshState());assert.equal(save({setItem:()=>{throw Error();}},freshState()),false);});
