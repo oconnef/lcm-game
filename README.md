@@ -12,7 +12,7 @@ python3 -m http.server 8000
 
 On the same computer, open `http://localhost:8000/`. Keep the terminal running. Use a server rather than opening `index.html` directly, because this version loads JavaScript modules. If port 8000 is occupied by a server for this folder, reuse it.
 
-Move with WASD / arrows or hold the on-screen direction buttons. Press E / Space or tap the contextual action button near people and objects. Music is opt-in. Escape or Pause freezes movement. Restart asks before clearing progress. Progress saves in this browser on this origin; changing the host or port uses a different save. If browser storage is unavailable, the game reports that progress lasts only for the session.
+Move with WASD / arrows or hold the on-screen direction buttons. Press E / Space or tap the contextual action button near people and objects. Press **F** or tap the visible FLARE button to use an acquired flare. On phones, hold the on-screen directional pad and tap the action/flare buttons; no gestures or external keyboard are required. Music is opt-in. Escape or Pause freezes movement. Restart asks before clearing progress. Progress saves in this browser on this origin; changing the host or port uses a different save. If browser storage is unavailable, the game reports that progress lasts only for the session.
 
 ## Walkthrough (puzzle spoilers)
 
@@ -49,7 +49,7 @@ This build has a complete playable route and win/retry flow. Automated playthrou
 
 ## Music
 
-Enable **MUSIC** before or during play. In the chapel, the track changes to an original MIDI-style organ arrangement of Wagner’s public-domain **Bridal Chorus** (“Here Comes the Bride,” *Lohengrin*, 1850). Other areas use original synthesized themes, with a detection stinger and a separate escape theme. The active title appears below the music controls. No external audio files, recordings, browser plug-ins or MIDI player are required. See [audio credits](docs/AUDIO_CREDITS.md).
+Enable **MUSIC** before or during play. In the chapel, the track changes to an original MIDI-style organ arrangement of Wagner’s public-domain **Bridal Chorus** (“Here Comes the Bride,” *Lohengrin*, 1850). Other areas use original synthesized themes, with a detection stinger and a MIDI-style arrangement of Mendelssohn’s public-domain **Wedding March** for the car outro. The active title appears below the music controls. No external audio files, recordings, browser plug-ins or MIDI player are required. See [audio credits](docs/AUDIO_CREDITS.md).
 
 ## Verify changes
 
@@ -64,6 +64,7 @@ python3 tests/presentation_browser.py
 python3 tests/full_game_browser.py
 python3 tests/checkpoint_browser.py
 python3 tests/pursuit_browser.py
+python3 tests/flare_keyboard_browser.py
 python3 tests/audio_browser.py
 ```
 

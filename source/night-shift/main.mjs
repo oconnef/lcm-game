@@ -50,7 +50,7 @@ function act(){
  apply(o.id);
 }
 function pause(){if(document.querySelector('dialog[open]')||state.won)return;paused=!paused;controls.clear();$('pause').textContent=paused?'RESUME':'PAUSE';$('paused').hidden=!paused;}
-const controls=input(act,pause);
+const controls=input(act,pause,useFlare);
 $('interact').onclick=()=>{act();$('interact').blur();};$('pause').onclick=()=>{pause();$('pause').blur();};
 $('unlock').onsubmit=e=>{e.preventDefault();$('lock').close();apply(lockTarget,$('code').value);};$('cancelLock').onclick=()=>$('lock').close();
 $('restart').onclick=()=>{controls.clear();$('restartDialog').showModal();};$('cancelRestart').onclick=()=>$('restartDialog').close();
@@ -60,7 +60,8 @@ $('confirmRestart').onclick=()=>{
 for(const dialog of document.querySelectorAll('dialog'))dialog.addEventListener('close',()=>{controls.clear();document.activeElement?.blur();});
 document.querySelectorAll('[data-song]').forEach(b=>b.onclick=()=>{songs.push(b.dataset.song);$('songSequence').textContent=songs.join(' → ').toUpperCase();if(songs.length===3){$('songs').close();apply('jukebox',songs.join(','));}});$('cancelSongs').onclick=()=>$('songs').close();
 document.querySelectorAll('[data-note]').forEach(b=>b.onclick=()=>{const n=b.dataset.note;organNotes.push(n);sound.note({G:67,C:72,D:74,B:71}[n]);$('organSequence').textContent=organNotes.join(' → ');if(organNotes.length===8){$('organ').close();apply('organ',organNotes.join(','));}});$('cancelOrgan').onclick=()=>$('organ').close();
-$('flare').onclick=()=>{if(blocked()||!state.garageReward||state.flareUsed||state.scene!=='graveyard'&&!pursuitActive(state))return;state.flareUsed=true;enemy.stunned=8;if(chase)chase.enemies.forEach(e=>{e.stunned=8;});enemy.alert=0;sound.cue();say('YOU|The flare burns steady red. The pursuers back away. Eight seconds to move.');hud();persist();};
+function useFlare(){if(blocked()||!state.garageReward||state.flareUsed||state.scene!=='graveyard'&&!pursuitActive(state))return;state.flareUsed=true;enemy.stunned=8;if(chase)chase.enemies.forEach(e=>{e.stunned=8;});enemy.alert=0;sound.cue();say('YOU|The flare burns steady red. The pursuers back away. Eight seconds to move.');hud();persist();}
+$('flare').onclick=useFlare;
 $('retry').onclick=()=>{$('outcome').close();resetActors();};$('finish').onclick=()=>$('outcome').close();
 $('outcome').addEventListener('cancel',e=>{if(!state.won)e.preventDefault();});
 hud();portrait($('portrait'),'YOU');if(state.key)$('dialogue').textContent='Shift resumed. '+objective(state)+'. Open the mission log to review your clues.';

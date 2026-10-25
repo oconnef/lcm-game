@@ -3,7 +3,8 @@
 All audio is synthesized in the browser from MIDI note numbers using Web Audio oscillators. No third-party recording or commercial song audio is distributed.
 
 - **Bridal Chorus** (“Here Comes the Bride”): composition by Richard Wagner, *Lohengrin* (1850), public domain. Short organ-style arrangement implemented for this game in `source/night-shift/audio.mjs`. The printed opening phrase also forms the chapel puzzle, with a silent accessible solution.
-- **Night Shift**, **Between the Wrecks**, **Forgotten Garage**, **Desert Dawn**, and the detection cue: original synthesized game themes/effects.
+- **Wedding March**: Felix Mendelssohn, *A Midsummer Night’s Dream* (1842), public domain. Short MIDI-style recessional arrangement for the Cadillac outro, synthesized locally with no third-party recording.
+- **Night Shift**, **Between the Wrecks**, **Forgotten Garage**, and the detection cue: original synthesized game themes/effects.
 
 Playback starts only after the Music button is clicked. Mute suspends the AudioContext. Chapel notes can be played individually on the organ while audio is enabled. The original pop recording of “Chapel of Love” is not included.
 

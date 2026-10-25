@@ -43,4 +43,4 @@ async def main():
   assert not errors,errors
   await b.close()
   print(json.dumps({'result':'PASS','checks':'both enemies indoors; contact damage; pause; doorway follow; reload; Cadillac win; #watch CTA; no hiding; flare survives doors','errors':errors}))
-asyncio.run(main())
+if __name__=='__main__':asyncio.run(main())

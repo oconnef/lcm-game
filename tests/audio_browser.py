@@ -20,5 +20,16 @@ async def main():
   assert all(t['finite'] and t['rms']>.001 for t in rendered),rendered
   assert not errors,errors
   print(json.dumps({'result':'PASS','autoplay':'no context before click','mute':'suspended','chapel':'Bridal Chorus','offline_tracks':rendered}))
+  ending=await b.new_page()
+  await ending.add_init_script('localStorage.setItem("lcm-night-shift-v1",JSON.stringify({scene:"escape",x:320,y:360,key:true,clue:true,voucher:true,completed:true,betty:true,order:true,token:true,chapelKey:true,escaped:true,score:true,crank:true,graveyardUnlocked:true,fuse:true,winchPowered:true,carKeys:true,won:true,hp:3}))')
+  await ending.goto('http://127.0.0.1:8000/')
+  await ending.locator('#finish').click()
+  assert await ending.locator('#musicTrack').get_attribute('data-track')=='escape'
+  assert 'Wedding March' in await ending.locator('#musicTrack').inner_text()
+  await ending.locator('#music').click()
+  assert await ending.locator('#music').get_attribute('aria-pressed')=='true'
+  await ending.locator('#music').click()
+  assert await ending.locator('#music').get_attribute('aria-pressed')=='false'
+  print('Saved car outro: MIDI-style Wedding March selection and mute PASS')
   await b.close()
 asyncio.run(main())
