@@ -49,7 +49,7 @@ async def main():
    assert 'Courtyard cleared' in await page.locator('#mission').inner_text()
    await page.reload();await page.wait_for_timeout(200)
    assert 'Courtyard cleared' in await page.locator('#mission').inner_text()
-   await page.locator('summary').click();assert await page.locator('#journal').is_visible()
+   await page.locator('.journal summary').click();assert await page.locator('#journal').is_visible()
    await page.screenshot(path=f'/tmp/diner-{"mobile" if mobile else "desktop"}.png',full_page=True)
    assert not errors,errors
    print(json.dumps({'viewport':'mobile' if mobile else 'desktop','result':'PASS','checks':'legacy save, courtyard lock, Betty, slip, wrong/right songs, token, register, courtyard, hiding, pause, chapel, save/reload','errors':errors}))

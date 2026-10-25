@@ -45,6 +45,7 @@ node --test tests/night_shift.test.mjs
 # With the server above running, Python Playwright installed, and /usr/bin/chromium available:
 python3 tests/night_shift_browser.py
 python3 tests/diner_browser.py
+python3 tests/presentation_browser.py
 ```
 
 The unit tests cover progression gates, collisions, nearby interaction selection, storage recovery/migration, enemy sightlines, hiding, damage cooldown, and checkpoint recovery. Browser tests complete the chapter using desktop keyboard and mobile on-screen controls, including wrong codes, reloads, music, pause, and restart. Browser screenshots are written to `/tmp/night-shift-desktop.png` and `/tmp/night-shift-mobile.png`.
@@ -53,9 +54,17 @@ The unit tests cover progression gates, collisions, nearby interaction selection
 
 Upload `index.html` and the complete `source/night-shift/` directory together to a static web host, preserving their relative paths. No server-side code, build command, credentials, screenplay, or reference artwork is needed. Serve `.mjs` files as JavaScript (`text/javascript` or `application/javascript`). Test the hosted root page before sharing it. This repository has not been deployed automatically.
 
+## Visual presentation
+
+The current scenes use original procedural pixel art: patterned floor materials, wood grain, upholstered seating, shaded furniture, detailed vehicles, steady warm lighting, and face sprites with walking animation. The conversation card adds a speaker portrait. Full dialogue stays below the game canvas until the next conversation; Previous dialogue keeps the latest 16 lines for the current session. Persistent puzzle clues remain in the mission log after reload.
+
+![Current diner presentation](docs/screenshots/diner.png)
+
+Presentation checks cover all five scenes at desktop/mobile sizes, portrait rendering, viewport overflow, conversation history, and dialogue remaining visible beyond the previous bubble timeout. Art rendering is separate from collision geometry and progression.
+
 ## Code layout
 
-`source/night-shift/` contains separate modules for state/progression/save, scene definitions/collision, input, canvas rendering/dialogue, generated audio, and runtime/UI wiring. The enemy module handles patrol, detection, chase, damage and recovery. All game visuals are drawn locally with Canvas; no reference photos or screenplay text are bundled into the playable chapter.
+`source/night-shift/` contains separate modules for state/progression/save, scene definitions/collision, input, canvas rendering/dialogue, generated audio, and runtime/UI wiring. The art module draws scene materials, props, character sprites and portraits; the renderer composes the scene without painting labels over props. The enemy module handles patrol, detection, chase, damage and recovery. All game visuals are drawn locally with Canvas; no reference photos or screenplay text are bundled into the playable chapter.
 
 ---
 
