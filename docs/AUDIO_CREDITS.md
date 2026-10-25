@@ -9,4 +9,4 @@ Playback starts only after the Music button is clicked. Mute suspends the AudioC
 
 ## Release validation
 
-The movie CTA retains the official URL supplied in the design brief: https://lastchancemotelmovie.com/ . The environment’s egress proxy rejected an external verification request with HTTP 403; destination content and rental availability remain unverified here. Check them in a regular browser before a public launch.
+The movie CTA retains the official URL supplied in the design brief: https://lastchancemotelmovie.com/#watch . The environment’s egress proxy rejected an external verification request with HTTP 403; destination content and rental availability remain unverified here. Check them in a regular browser before a public launch.

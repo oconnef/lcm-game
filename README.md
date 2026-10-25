@@ -41,9 +41,9 @@ The mission log keeps discovered clues. Hiding stops movement; interact again to
 13. Search the tool locker in the **northwest** for the winch fuse. Fit it to the **east-side winch control**, then recover the Cadillac keys from the **northeast key box**.
 14. The Monster patrols the wrecks and follows paths around solid obstacles. Watch its sight cone and warnings. The blue tarps at the north and south central gaps are hiding places. Keep moving when spotted and break line of sight.
 15. **Optional garage:** read the service plate near the southeast wrecks, then enter the garage. The locker asks for your room number followed by your arrival minute: **0617**. It gives first aid and a single flare. Use FLARE in the graveyard to hold the Monster back for eight seconds. This detour is not required to finish.
-16. Return through the west gate, retreat to the diner, pass through reception, and leave for the parking lot. Use the **pink Cadillac** to escape. Room 07 stays locked even with the car keys.
+16. Return through the west gate, retreat to the diner, pass through reception, and leave for the parking lot. Use the **pink Cadillac** to escape. **Taking the keys triggers a fast pursuit by both Harold and the Monster through every scene and door.** Run without stopping: hiding does not work during this escape, and the diner/chapel no longer restore health. A saved flare can hold both pursuers back for eight seconds, including indoors. Pause and open dialogs still freeze play. Room 07 stays locked even with the car keys.
 
-Getting caught shows a retry screen and returns you to the diner (Harold) or chapel (Monster), with health restored and every puzzle item retained. Music/notes are opt-in; both puzzles can be solved silently. Reloading resumes progress, including the completed escape ending. Restart clears the current save only after confirmation.
+Before taking the keys, getting caught shows a retry screen and returns you to the diner (Harold) or chapel (Monster), with health restored and every puzzle item retained. During the final pursuit, a catch returns you to the west courtyard gate with your car keys retained; the chase resumes on retry. Music/notes are opt-in; both puzzles can be solved silently. Reloading resumes progress, including the completed escape ending. Restart clears the current save only after confirmation.
 
 This build has a complete playable route and win/retry flow. Automated playthroughs verify completion, not the design brief’s 15–25-minute first-play target. Human pacing, difficulty and likeness-specific art still need playtesting/art direction; the Monster is an original shadow design, not an actor likeness.
 
@@ -63,10 +63,11 @@ python3 tests/diner_browser.py
 python3 tests/presentation_browser.py
 python3 tests/full_game_browser.py
 python3 tests/checkpoint_browser.py
+python3 tests/pursuit_browser.py
 python3 tests/audio_browser.py
 ```
 
-The 23 logic tests cover progression gates, scene reachability, collision-safe navigation, storage migration, sightlines, hiding, damage, flares and checkpoints. The full-game browser test starts fresh, solves all puzzles, visits the optional garage, and reaches the saved ending with desktop keyboard and mobile on-screen controls. It accelerates the browser clock while exercising the real input and movement code; it does not establish human play time. The checkpoint test covers an actual Monster catch, retry, hiding and a successful escape without the garage or flare. Audio checks render all five tracks through OfflineAudioContext and verify opt-in/mute behavior. Other browser checks cover layout, portraits, dialogue history, and the original chapter regressions. Screenshots are written under `/tmp/`.
+The 30 logic tests cover progression gates, scene reachability, collision-safe navigation, storage migration, sightlines, hiding, damage, flares and checkpoints. The full-game browser test starts fresh, solves all puzzles, visits the optional garage, and reaches the saved ending with desktop keyboard and mobile on-screen controls. It accelerates the browser clock while exercising the real input and movement code; it does not establish human play time. The checkpoint test covers an actual Monster catch, retry, hiding and a successful escape without the garage or flare. Pursuit tests cover both enemies following indoors/across doors, faster speeds, shared damage cooldown, pause/reload continuity, flare persistence, and the direct `#watch` CTA. Audio checks render all five tracks through OfflineAudioContext and verify opt-in/mute behavior. Other browser checks cover layout, portraits, dialogue history, and the original chapter regressions. Screenshots are written under `/tmp/`.
 
 ## Publish the game
 
@@ -111,7 +112,7 @@ The original repository was supplied as a handoff bundle. The following instruct
 
 The supplied images and screenplay are for development reference. Confirm distribution rights and actor likeness permissions before shipping promotional imagery or likenesses publicly. Cadillac Jack's website photographs are NOT included; obtain permission before incorporating any original photographs. Create original pixel-art environments and sprites rather than redistributing external site assets.
 
-Official film site for marketing CTA: https://lastchancemotelmovie.com/ . Verify destination and rental links before public launch.
+Official film site for marketing CTA: https://lastchancemotelmovie.com/#watch . Verify destination and rental links before public launch.
 
 ## Local prototype checks
 

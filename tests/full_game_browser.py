@@ -38,6 +38,11 @@ async def use(page,object_id,mobile):
  if mobile:await page.locator('#interact').tap()
  else:await page.keyboard.press('e')
  await page.clock.run_for(40)
+ current=await snapshot(page)
+ if current['carKeys'] and not current['won']:
+  pursuit=await page.evaluate('async()=>(await import("/source/night-shift/main.mjs")).pursuitSnapshot()')
+  assert pursuit['scene']==current['scene']
+  assert {e['kind'] for e in pursuit['enemies']}=={'HAROLD','MONSTER'}
 
 async def code(page,value):
  await page.locator('#code').fill(value);await page.get_by_role('button',name='UNLOCK',exact=True).click();await page.clock.run_for(40)
@@ -83,7 +88,7 @@ async def main():
    await use(page,'cadillac',mobile);assert (await snapshot(page))['won']
    assert await page.locator('#outcome').is_visible()
    assert await page.locator('#outcomeTitle').inner_text()=='YOU SURVIVED THE GAME.'
-   assert await page.get_by_role('link',name='RENT OR BUY THE MOVIE').get_attribute('href')=='https://lastchancemotelmovie.com/'
+   assert await page.get_by_role('link',name='RENT OR BUY THE MOVIE').get_attribute('href')=='https://lastchancemotelmovie.com/#watch'
    await page.screenshot(path=f'/tmp/escape-{"mobile" if mobile else "desktop"}.png',full_page=True)
    await page.reload();await page.clock.run_for(50);assert await page.locator('#outcome').is_visible()
    assert not errors,errors

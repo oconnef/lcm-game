@@ -4,7 +4,7 @@ export const ORGAN_SEQUENCE=['G','C','C','C','G','D','B','C'];
 function enter(s,scene,x,y){Object.assign(s,{scene,x,y});}
 export function finaleObjective(s){
  if(s.won)return 'ESCAPED · You survived the night shift';
- if(s.carKeys)return 'Return to the parking lot · Escape in the pink Cadillac';
+ if(s.carKeys)return 'RUN! Harold & Monster are chasing · Reach the Cadillac';
  if(s.winchPowered)return 'Recover the Cadillac keys from the raised wreck';
  if(s.fuse)return 'Fit the fuse to the winch control in the graveyard';
  if(s.graveyardUnlocked)return 'Find Casey · Search the wrecks for a winch fuse';
@@ -17,7 +17,8 @@ export function finaleInteract(s,id,code=''){
  switch(id){
  case 'chapel':
   if(!s.chapelKey)return 'YOU|The gate is locked.';
-  s.escaped=true;enter(s,'chapel',320,380);s.hp=3;
+  s.escaped=true;enter(s,'chapel',320,380);if(!s.carKeys)s.hp=3;
+  if(s.carKeys)return 'YOU|They are coming through the chapel door. Keep moving!';
   return 'YOU|The chapel smells of old flowers. A wedding march waits on the lectern. This is a safe place to catch my breath.';
  case 'chapelExit':enter(s,'yard',440,240);return 'YOU|Back in the courtyard. The graveyard gate is on the west side, beyond the pool.';
  case 'score':s.score=true;return 'YOU|The score is marked Bridal Chorus. The first phrase reads G · C · C · C · G · D · B · C. A pencilled note says: “Our song opens the organ’s keepsake drawer.” The printed notes work even with music muted.';
@@ -38,7 +39,7 @@ export function finaleInteract(s,id,code=''){
   s.winchPowered=true;return 'YOU|The fuse fits. The winch groans and lifts the wreck. The Cadillac’s key box is clear now, a little farther north.';
  case 'keyBox':
   if(!s.winchPowered)return 'YOU|A wreck pins the key box shut. The winch control is just south of here.';
-  s.carKeys=true;return 'YOU|Cadillac keys. Time to leave. Return through the west gate, retreat through the diner and office, then use the pink Cadillac in the parking lot.';
+  s.carKeys=true;return 'YOU|Cadillac keys! Harold and the Monster heard the winch. They are coming fast, and they will follow me through every door. No time to hide. Run! Return through the west gate, retreat through the diner and office, then use the pink Cadillac in the parking lot.';
  case 'plate':s.garageClue=true;return 'YOU|An old service plate: “Garage locker: take the room number first, then the arrival minute.” My room registration has both. A flare icon is scratched beside the numbers.';
  case 'garageDoor':enter(s,'garage',320,380);return 'YOU|A forgotten garage. The workbench locker has a four-digit padlock. I can leave without opening it; the Cadillac keys are all I need to escape.';
  case 'garageExit':enter(s,'graveyard',570,380);return 'YOU|Back among the wrecks. Watch the gaps between the cars.';
@@ -58,5 +59,5 @@ export function finaleJournal(s){return [
  s.crank?'Brass crank: opens the west courtyard gate.':'',
  s.casey?'Casey: northwest tool locker → east winch → northeast key box. Tarps are hiding places.':'',
  s.garageClue?'Garage plate: room number, then arrival minute. Room 06 / 03:17.':'',
- s.carKeys?'Escape route: graveyard → courtyard → diner → office → parking lot → pink Cadillac.':''
+ s.carKeys?'KEYS TAKEN: both enemies chase through every scene. Keep running; hiding and safe-room healing are unavailable. Escape route: graveyard → courtyard → diner → office → parking lot → pink Cadillac.':''
 ].filter(Boolean);}

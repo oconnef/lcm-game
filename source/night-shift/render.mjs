@@ -74,7 +74,7 @@ function lighting(g,scene){
  for(const [x,y] of sources){const light=g.createRadialGradient(x,y,3,x,y,outside?85:110);light.addColorStop(0,'#ffd79b1a');light.addColorStop(1,'#ffd79b00');g.fillStyle=light;g.fillRect(x-110,y-110,220,220);}
  const vignette=g.createRadialGradient(320,250,140,320,250,370);vignette.addColorStop(0,'#0e172000');vignette.addColorStop(1,'#0e17204d');g.fillStyle=vignette;g.fillRect(14,88,612,350);
 }
-export function render(g,s,bubble,near,enemy,hidden,motion={}){
+export function render(g,s,bubble,near,enemy,hidden,motion={},pursuers=[]){
  g.save();g.imageSmoothingEnabled=false;
  const time=motion.time||0;
  surface(g,s.scene);
@@ -85,10 +85,11 @@ export function render(g,s,bubble,near,enemy,hidden,motion={}){
  if(s.scene==='office')actors.push({x:285,y:197,name:'BOBBI LOVE'});
  if(s.scene==='diner')actors.push({x:320,y:207,name:'BETTY'});
  if(s.scene==='graveyard')actors.push({x:45,y:350,name:'CASEY'});
- if(['yard','graveyard'].includes(s.scene)&&!s.won){
+ if(['yard','graveyard'].includes(s.scene)&&!s.won&&!s.carKeys){
   g.save();g.fillStyle=enemy.mode==='chase'?'#f96e7d2b':'#f3ca7b1c';g.beginPath();g.moveTo(enemy.x,enemy.y);g.arc(enemy.x,enemy.y,s.scene==='graveyard'?185:170,Math.atan2(enemy.facing?.y??enemy.dir,enemy.facing?.x??0)-.67,Math.atan2(enemy.facing?.y??enemy.dir,enemy.facing?.x??0)+.67);g.closePath();g.fill();g.restore();
   actors.push({x:enemy.x,y:enemy.y,name:enemy.kind||'HAROLD',motion:{time,walking:true,facing:enemy.dir>0?'down':'up'}});
  }
+ if(s.carKeys&&!s.won)for(const e of pursuers){if(e.arrival<=0)actors.push({x:e.x,y:e.y,name:e.kind,motion:{time,walking:!e.stunned,facing:(e.facing?.y??1)<0?'up':'down'}});}
  if(s.scene!=='escape')actors.push({x:s.x,y:s.y,name:'YOU',motion});
  actors.sort((a,b)=>a.y-b.y).forEach(a=>person(g,a.x,a.y,a.name,a.motion));
  if(hidden){ellipse(g,s.x,s.y+20,16,6,'#1d283488');text(g,'HIDDEN',s.x,s.y-31,8,'#bdd7c7');}

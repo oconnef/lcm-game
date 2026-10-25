@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {freshState,interact} from '../source/night-shift/state.mjs';
+import {scenes,collides} from '../source/night-shift/scenes.mjs';
+import {pursuitActive,startPursuit,followThroughDoor,updatePursuit} from '../source/night-shift/pursuit.mjs';
+const runner=()=>({...freshState(),scene:'parking',x:600,y:260,carKeys:true});
+test('pursuit starts only after keys and ends on escape',()=>{const s=freshState();assert.equal(pursuitActive(s),false);s.carKeys=true;assert.equal(pursuitActive(s),true);s.won=true;assert.equal(pursuitActive(s),false);});
+test('both pursuers move faster than the player in clear space',()=>{const s=runner(),c=startPursuit(s);for(const e of c.enemies)Object.assign(e,{x:350,y:260,arrival:0});for(let i=0;i<50;i++)updatePursuit(s,c,.02);assert.ok(c.enemies[0].x>535,c.enemies[0].x);assert.ok(c.enemies[1].x>520,c.enemies[1].x);assert.equal(s.hp,3);});
+test('door transitions preserve both identities, flare and active pursuit in every scene',()=>{const s=runner(),c=startPursuit(s);c.enemies[0].stunned=7;for(const scene of ['graveyard','yard','diner','office','parking','room','chapel','garage']){Object.assign(s,{scene,...scenes[scene].spawn});followThroughDoor(c,s);assert.equal(c.scene,scene);assert.deepEqual(c.enemies.map(e=>e.kind),['MONSTER','HAROLD']);assert.equal(c.enemies[0].stunned,7);assert.ok(c.enemies.every(e=>e.arrival>0&&!collides(scene,e.x,e.y)));assert.ok(pursuitActive(s));}});
+test('pursuers cannot deal simultaneous contact damage',()=>{const s=runner(),c=startPursuit(s);c.cooldown=0;c.enemies.forEach(e=>e.arrival=0);updatePursuit(s,c,.02);assert.equal(s.hp,2);updatePursuit(s,c,.02);assert.equal(s.hp,2);});
+test('a pursuit catch retains keys and restores a winnable checkpoint',()=>{const s={...runner(),hp:1},c=startPursuit(s);c.cooldown=0;c.enemies.forEach(e=>e.arrival=0);updatePursuit(s,c,.02);assert.equal(s.scene,'yard');assert.equal(s.hp,3);assert.ok(s.carKeys);assert.equal(s.deaths,1);assert.ok(pursuitActive(s));});
+test('neither chapel nor diner heals the player during pursuit',()=>{const s={...runner(),chapelKey:true,hp:1};interact(s,'chapel');assert.equal(s.hp,1);interact(s,'yardExit');assert.equal(s.hp,1);});
+test('won games cannot be damaged by remaining pursuers',()=>{const s={...runner(),won:true},c=startPursuit(s);c.cooldown=0;c.enemies.forEach(e=>e.arrival=0);assert.equal(updatePursuit(s,c,1),null);assert.equal(s.hp,3);});

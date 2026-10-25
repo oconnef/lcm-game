@@ -30,7 +30,7 @@ Dialogue bubbles anchored above speaking NPC with name and clear contrast, auto-
 Original 8-bit chiptune soundtrack with distinct area loops and danger stinger, user-initiated audio toggle; respect browser autoplay policy. Synthesized WebAudio or licensed sound files only. Never copy recognizable Nintendo melodies.
 
 ## Marketing conversion
-On win and loss screens, show compelling film CTA: 'YOU SURVIVED THE GAME. CAN YOU SURVIVE THE MOVIE?' / 'CHECK IN. NEVER CHECK OUT.' Link to https://lastchancemotelmovie.com/ with label 'RENT OR BUY THE MOVIE'. Verify links. Optional shareable survival score, but don't require sign-in. Do not reveal the Andi family connection or any major ending twist.
+On win and loss screens, show compelling film CTA: 'YOU SURVIVED THE GAME. CAN YOU SURVIVE THE MOVIE?' / 'CHECK IN. NEVER CHECK OUT.' Link to https://lastchancemotelmovie.com/#watch with label 'RENT OR BUY THE MOVIE'. Verify links. Optional shareable survival score, but don't require sign-in. Do not reveal the Andi family connection or any major ending twist.
 
 ## Visual assets
 Character images and posters in `references/` are user-provided design references; not game-ready sprites. Build original sprites from visual references, distinguish Bobbi Love, Casey, Andi, Betty, Harold, Monster. Some reference files are unlabeled; ask user to identify rather than guessing. Use film poster's hot pink neon, sunset orange, teal pool, distressed retro signage, and dusty desert palette. Monster likeness needs reference; do not invent actor resemblance.
