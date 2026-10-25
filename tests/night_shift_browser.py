@@ -43,6 +43,11 @@ async def main():
             await act()
             assert 'Room 06 key' in await page.locator('#inventory').inner_text()
             await walk('s',800);await walk('d',1550);await act()
+            assert await page.locator('#location').inner_text()=='MOTEL PARKING LOT'
+            await walk('a',1100);await act()
+            assert await page.locator('#location').inner_text()=='MOTEL PARKING LOT'
+            assert 'locked' in await page.locator('#dialogue').inner_text()
+            await walk('a',1100);await act()
             assert await page.locator('#location').inner_text()=='ROOM 06'
             await walk('w',850);await act()
             assert '03:17' in await page.locator('#inventory').inner_text()
@@ -57,6 +62,14 @@ async def main():
             assert 'Diner voucher' in await page.locator('#inventory').inner_text()
             assert await page.locator('#location').inner_text()=='ROOM 06'
             await walk('a',1120);await walk('s',1000);await act()
+            assert await page.locator('#location').inner_text()=='MOTEL PARKING LOT'
+            # Even after the drawer puzzle, Room 07 stays locked.
+            await walk('d',1100);await act()
+            assert 'locked' in await page.locator('#dialogue').inner_text()
+            assert await page.locator('#location').inner_text()=='MOTEL PARKING LOT'
+            await page.reload();await page.wait_for_timeout(150)
+            assert await page.locator('#location').inner_text()=='MOTEL PARKING LOT'
+            await walk('d',1380);await walk('s',800);await act()
             assert await page.locator('#location').inner_text()=='MOTEL OFFICE'
             await walk('a',1510);await walk('w',800);await act()
             assert 'left door' in await page.locator('#dialogue').inner_text()
@@ -73,7 +86,7 @@ async def main():
             assert await page.locator('#inventory').inner_text()=='Empty'
             await page.reload();assert await page.locator('#inventory').inner_text()=='Empty'
             assert not errors,errors
-            print(json.dumps({'viewport':'mobile' if mobile else 'desktop','result':'PASS','checks':'locked door, check-in, room entry, clue, incorrect/correct code, save/reload, return dialogue, music, pause, restart','errors':errors}))
+            print(json.dumps({'viewport':'mobile' if mobile else 'desktop','result':'PASS','checks':'locked door, check-in, parking lot, Room 07 stays locked, room entry, clue, incorrect/correct code, save/reload, return dialogue, music, pause, restart','errors':errors}))
             await page.close()
         await browser.close()
 asyncio.run(main())

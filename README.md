@@ -17,10 +17,10 @@ Move with WASD / arrows or hold the on-screen direction buttons. Press E / Space
 ## Chapter one walkthrough (puzzle spoilers)
 
 1. Walk up to Bobbi at the reception desk and interact to receive the Room 06 key.
-2. Walk to the right-hand door and interact to enter Room 06.
+2. Use the office’s right-hand PARKING door. Cross the exterior walkway to Room 06 and unlock it with your room key. Room 07 beside it stays locked throughout the game.
 3. Read the registration slip on the central table. Note the arrival time, **03:17**.
 4. Walk to the drawer at the right, interact, and enter **0317**. Collect the diner voucher.
-5. Return through the door at the bottom of the room. Talk to Bobbi to finish the chapter.
+5. Exit Room 06 to the parking lot. Cross to the OFFICE door at the lower right, then talk to Bobbi to hand over the voucher.
 
 ## Continue into the diner and courtyard
 
