@@ -12,7 +12,7 @@ python3 -m http.server 8000
 
 On the same computer, open `http://localhost:8000/`. Keep the terminal running. Use a server rather than opening `index.html` directly, because this version loads JavaScript modules. If port 8000 is occupied by a server for this folder, reuse it.
 
-Move with WASD / arrows or hold the on-screen direction buttons. Press E / Space or tap the contextual action button near people and objects. Press **F** or tap the visible FLARE button to use an acquired flare. On phones, hold the on-screen directional pad and tap the action/flare buttons; no gestures or external keyboard are required. Music is opt-in. Escape or Pause freezes movement. Restart asks before clearing progress. Progress saves in this browser on this origin; changing the host or port uses a different save. If browser storage is unavailable, the game reports that progress lasts only for the session.
+On desktop, move with WASD / arrows. On phones, drag and hold the thumb joystick at the bottom left; tap the large action button at the right to talk, inspect or open a door. The joystick and buttons stay on screen. Choose **Touch controls → Direction buttons** if preferred. Press E / Space or tap the contextual action button near people and objects. Press **F** or tap the visible FLARE button to use an acquired flare. On phones, tap **FLARE** beside the action button while continuing to steer; no keyboard shortcuts are needed. The mobile HUD is compact, with portrait and landscape layouts. Music is opt-in. Escape or Pause freezes movement. Restart asks before clearing progress. Progress saves in this browser on this origin; changing the host or port uses a different save. If browser storage is unavailable, the game reports that progress lasts only for the session.
 
 ## Walkthrough (puzzle spoilers)
 
@@ -66,10 +66,11 @@ python3 tests/checkpoint_browser.py
 python3 tests/pursuit_browser.py
 python3 tests/flare_keyboard_browser.py
 python3 tests/escape_updates_browser.py
+python3 tests/mobile_joystick_browser.py
 python3 tests/audio_browser.py
 ```
 
-The 30 logic tests cover progression gates, scene reachability, collision-safe navigation, storage migration, sightlines, hiding, damage, flares and checkpoints. The full-game browser test starts fresh, solves all puzzles, visits the optional garage, and reaches the saved ending with desktop keyboard and mobile on-screen controls. It accelerates the browser clock while exercising the real input and movement code; it does not establish human play time. The checkpoint test covers an actual Monster catch, retry, hiding and a successful escape without the garage or flare. Pursuit tests cover both enemies following indoors/across doors, faster speeds, shared damage cooldown, pause/reload continuity, flare persistence, and the direct `#watch` CTA. Audio checks render all five tracks through OfflineAudioContext and verify opt-in/mute behavior. Other browser checks cover layout, portraits, dialogue history, and the original chapter regressions. Screenshots are written under `/tmp/`.
+The 30 logic tests cover progression gates, scene reachability, collision-safe navigation, storage migration, sightlines, hiding, damage, flares and checkpoints. The full-game browser test starts fresh, solves all puzzles, visits the optional garage, and reaches the saved ending with desktop keyboard and the phone joystick. Native multi-touch checks also cover steering and pressing action/flare with a second finger, release/cancel safety, and small portrait/landscape layouts. It accelerates the browser clock while exercising the real input and movement code; it does not establish human play time. The checkpoint test covers an actual Monster catch, retry, hiding and a successful escape without the garage or flare. Pursuit tests cover both enemies following indoors/across doors, faster speeds, shared damage cooldown, pause/reload continuity, flare persistence, and the direct `#watch` CTA. Audio checks render all five tracks through OfflineAudioContext and verify opt-in/mute behavior. Other browser checks cover layout, portraits, dialogue history, and the original chapter regressions. Screenshots are written under `/tmp/`.
 
 ## Publish the game
 
@@ -81,7 +82,7 @@ The current scenes use original procedural pixel art: patterned floor materials,
 
 ![Current diner presentation](docs/screenshots/diner.png)
 
-[Chapel](docs/screenshots/chapel.png) · [Car graveyard](docs/screenshots/graveyard.png) · [Escape ending](docs/screenshots/escape.png)
+[Phone controls](docs/screenshots/mobile-controls.png) · [Chapel](docs/screenshots/chapel.png) · [Car graveyard](docs/screenshots/graveyard.png) · [Escape ending](docs/screenshots/escape.png)
 
 Presentation checks cover all eight explorable scenes at desktop/mobile sizes, portrait rendering, viewport overflow, conversation history, and dialogue remaining visible beyond the previous bubble timeout. Art rendering is separate from collision geometry and progression.
 

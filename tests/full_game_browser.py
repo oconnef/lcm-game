@@ -18,7 +18,7 @@ async def navigate(page,x,y,mobile):
    direction=('right' if delta>0 else 'left') if axis=='x' else ('down' if delta>0 else 'up')
    key={'right':'d','left':'a','down':'s','up':'w'}[direction]
    if mobile:
-    button=page.locator('[data-move='+direction+']');await button.scroll_into_view_if_needed();r=await button.bounding_box();await page.mouse.move(r['x']+r['width']/2,r['y']+r['height']/2);await page.mouse.down()
+    button=page.locator('#joystick');r=await button.bounding_box();cx=r['x']+r['width']/2;cy=r['y']+r['height']/2;await page.mouse.move(cx,cy);await page.mouse.down();await page.mouse.move(cx+({'right':42,'left':-42}.get(direction,0)),cy+({'down':42,'up':-42}.get(direction,0)))
    else:await page.keyboard.down(key)
    await page.clock.run_for(round(abs(delta)/(185 if current['carKeys'] else 155)*1000))
    if mobile:await page.mouse.up()

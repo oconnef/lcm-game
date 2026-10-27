@@ -10,6 +10,10 @@ async def main():
    page.on('pageerror',lambda e:errors.append(str(e)))
    await page.add_init_script('if (!sessionStorage.getItem("seeded")) {localStorage.setItem("lcm-night-shift-v1",JSON.stringify({scene:"office",x:85,y:380,key:true,clue:true,voucher:true,completed:true,hp:3}));sessionStorage.setItem("seeded","1");}')
    await page.goto('http://127.0.0.1:8000/');await page.wait_for_timeout(200)
+   if mobile:
+       await page.locator('.touch-settings summary').click()
+       await page.locator('#controlStyle').select_option('buttons')
+       await page.locator('.touch-settings summary').click()
    async def walk(key,ms):
     if mobile:
      b=page.locator('[data-move="'+{'w':'up','s':'down','a':'left','d':'right'}[key]+'"]');await b.scroll_into_view_if_needed();r=await b.bounding_box();await page.mouse.move(r['x']+r['width']/2,r['y']+r['height']/2);await page.mouse.down();await page.wait_for_timeout(ms);await page.mouse.up()

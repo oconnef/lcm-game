@@ -19,6 +19,10 @@ async def main():
             await page.wait_for_timeout(200)
             assert await page.locator('#location').inner_text()=='MOTEL OFFICE'
             assert await page.locator('#game').evaluate('(c)=>new Set(c.getContext("2d").getImageData(0,0,c.width,c.height).data).size')>30
+            if mobile:
+                await page.locator('.touch-settings summary').click()
+                await page.locator('#controlStyle').select_option('buttons')
+                await page.locator('.touch-settings summary').click()
             # Actual movement through keyboard or the on-screen pointer controls.
             async def walk(key,ms):
                 if mobile:

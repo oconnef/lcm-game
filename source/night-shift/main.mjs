@@ -12,6 +12,9 @@ let storage;try{storage=localStorage;}catch{storage={getItem:()=>null,setItem:()
 let state=load(storage),bubble=null,until=0,paused=false,last=0,dirty=false,saveAt=0,enemy=enemyState(state.scene),hidden=false,songs=[],organNotes=[],lockTarget='drawer',motion={facing:'down',walking:false,time:0},lastMode='patrol';
 if(collides(state.scene,state.x,state.y))Object.assign(state,scenes[state.scene].spawn);
 let chase=pursuitActive(state)?startPursuit(state):null;
+const mobileControls=matchMedia('(pointer: coarse), (max-width: 700px)');
+function placeTouchControls(){const flare=$('flare');(mobileControls.matches?document.querySelector('.touch-actions'):document.querySelector('.toolbar')).append(flare);flare.textContent=mobileControls.matches?'FLARE':'FLARE · F';$('game').setAttribute('aria-label',mobileControls.matches?'Motel game. Drag the thumb joystick to move, then tap the action button to interact.':'Motel game. Move with WASD or arrows. Press E or Space to interact.');}
+placeTouchControls();mobileControls.addEventListener('change',()=>{placeTouchControls();controls.clear();});
 const sound=music($('music'),()=>state.won?'won':state.scene);
 function persist(){ $('saveStatus').textContent=save(storage,state)?'Progress saved on this browser':'Saving unavailable — progress lasts this session';dirty=false; }
 function blocked(){return paused||state.won||!!document.querySelector('dialog[open]');}
@@ -30,14 +33,14 @@ function say(line){
  const [speaker,message]=line.split('|');bubble={speaker,message};until=performance.now()+12000;$('dialogue').textContent=speaker+': '+message;portrait($('portrait'),speaker);
  const item=document.createElement('li');item.textContent=speaker+': '+message;$('conversationHistory').append(item);while($('conversationHistory').children.length>16)$('conversationHistory').firstElementChild.remove();
 }
-function resetActors(){enemy=enemyState(state.scene);hidden=false;lastMode='patrol';controls.clear();if(pursuitActive(state)&&chase)followThroughDoor(chase,state);}
+function resetActors(keepTouch=false){enemy=enemyState(state.scene);hidden=false;lastMode='patrol';controls.clear(keepTouch);if(pursuitActive(state)&&chase)followThroughDoor(chase,state);}
 function outcome(won){
  controls.clear();$('outcomeTitle').textContent=won?'YOU SURVIVED THE GAME.':'NO VACANCY. EVER.';
  $('outcomeBody').textContent=won?'The Cadillac carries you onto the desert road. Can you survive the movie? '+(state.garageReward?'You also found the secret garage. ':'')+'Times caught: '+state.deaths+'.':state.carKeys?'You still have the Cadillac keys. The pursuit resumes when you retry. Run through the diner and office to the parking lot.':'You got caught. Your clues and keys are kept, and you have recovered at a safe checkpoint. Try cover, hiding, or the optional garage flare.';
  $('retry').hidden=won;$('finish').hidden=!won;$('outcome').showModal();
 }
 function apply(id,code=''){
- const previous=state.scene,hadKeys=state.carKeys;say(interact(state,id,code));if(!hadKeys&&state.carKeys){chase=startPursuit(state,enemy);hidden=false;sound.cue();}if(previous!==state.scene)resetActors();hud();persist();if(state.won)outcome(true);
+ const previous=state.scene,hadKeys=state.carKeys;say(interact(state,id,code));if(!hadKeys&&state.carKeys){chase=startPursuit(state,enemy);hidden=false;sound.cue();}if(previous!==state.scene)resetActors(true);hud();persist();if(state.won)outcome(true);
 }
 function act(){
  if(blocked())return;const o=nearby(state);if(!o){say('YOU|Walk closer to a person, door, or clue.');return;}
@@ -51,7 +54,8 @@ function act(){
 }
 function pause(){if(document.querySelector('dialog[open]')||state.won)return;paused=!paused;controls.clear();$('pause').textContent=paused?'RESUME':'PAUSE';$('paused').hidden=!paused;}
 const controls=input(act,pause,useFlare);
-$('interact').onclick=()=>{act();$('interact').blur();};$('pause').onclick=()=>{pause();$('pause').blur();};
+function touchButton(button,action){let lastTouch=-Infinity;button.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'){e.preventDefault();lastTouch=performance.now();action();}});button.onclick=e=>{if(e.detail!==0&&performance.now()-lastTouch<700)return;action();};}
+touchButton($('interact'),()=>{act();$('interact').blur();});touchButton($('pause'),()=>{pause();$('pause').blur();});
 $('unlock').onsubmit=e=>{e.preventDefault();$('lock').close();apply(lockTarget,$('code').value);};$('cancelLock').onclick=()=>$('lock').close();
 $('restart').onclick=()=>{controls.clear();$('restartDialog').showModal();};$('cancelRestart').onclick=()=>$('restartDialog').close();
 $('confirmRestart').onclick=()=>{
@@ -61,7 +65,7 @@ for(const dialog of document.querySelectorAll('dialog'))dialog.addEventListener(
 document.querySelectorAll('[data-song]').forEach(b=>b.onclick=()=>{songs.push(b.dataset.song);$('songSequence').textContent=songs.join(' → ').toUpperCase();if(songs.length===3){$('songs').close();apply('jukebox',songs.join(','));}});$('cancelSongs').onclick=()=>$('songs').close();
 document.querySelectorAll('[data-note]').forEach(b=>b.onclick=()=>{const n=b.dataset.note;organNotes.push(n);sound.note({G:67,C:72,D:74,B:71}[n]);$('organSequence').textContent=organNotes.join(' → ');if(organNotes.length===8){$('organ').close();apply('organ',organNotes.join(','));}});$('cancelOrgan').onclick=()=>$('organ').close();
 function useFlare(){if(blocked()||!state.garageReward||state.flareUsed||state.scene!=='graveyard'&&!pursuitActive(state))return;state.flareUsed=true;enemy.stunned=8;if(chase)chase.enemies.forEach(e=>{e.stunned=8;});enemy.alert=0;sound.cue();say('YOU|The flare burns steady red. The pursuers back away. Eight seconds to move.');hud();persist();}
-$('flare').onclick=useFlare;
+touchButton($('flare'),useFlare);
 $('retry').onclick=()=>{$('outcome').close();resetActors();};$('finish').onclick=()=>$('outcome').close();
 $('outcome').addEventListener('cancel',e=>{if(!state.won)e.preventDefault();});
 hud();portrait($('portrait'),'YOU');if(state.key)$('dialogue').textContent='Shift resumed. '+objective(state)+'. Open the mission log to review your clues.';
@@ -79,7 +83,7 @@ function frame(t){
  if(pursuitActive(state))$('danger').textContent='ESCAPE PURSUIT · HAROLD & MONSTER · RUN TO THE CADILLAC';else if(['yard','graveyard'].includes(state.scene))$('danger').textContent=hidden?'HIDDEN · Wait for patrol':enemy.stunned?'FLARE · Monster held back':`${enemy.kind} ${enemy.mode==='chase'?'IS CHASING · Run or hide':enemy.mode==='suspicious'?'IS SUSPICIOUS':'PATROLLING · Stay behind cover'}`;else $('danger').textContent='';
  sound.update(state.won?'won':pursuitActive(state)?'graveyard':state.scene,pursuitActive(state)||enemy.mode==='chase');
  if(dirty&&t>saveAt){persist();saveAt=t+500;}
- const n=nearby(state);$('interact').textContent=n?n.label+' · E / Space':'Move closer to interact';
+ const n=nearby(state);$('interact').textContent=n?n.label+(mobileControls.matches?'':' · E / Space'):(mobileControls.matches?'Walk closer':'Move closer to interact');
  render(g,state,t<until?bubble:null,n,enemy,hidden,motion,chase?.enemies||[]);requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
