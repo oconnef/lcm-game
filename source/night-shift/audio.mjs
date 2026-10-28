@@ -15,7 +15,7 @@ export function scheduleNote(ctx,midi,start,duration,volume=.04,type='triangle')
  gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(volume,start+.015);gain.gain.exponentialRampToValueAtTime(.0001,start+Math.max(.04,duration));osc.connect(gain).connect(ctx.destination);osc.start(start);osc.stop(start+duration+.04);
 }
 export function music(button,readScene=()=> 'office'){
- let ctx,on=false,track='night',step=0,next=0,scene='office',danger=false,timer,lastTouch=-Infinity,busy=false;
+ let ctx,on=false,track='night',step=0,next=0,scene='office',danger=false,timer,lastTouch=-Infinity,busy=false,attempt=0,watch,deadline,touchWasPlaying=false;
  const playing=()=>on&&ctx?.state==='running';
  const label=()=>{button.textContent=playing()?'♫ MUSIC ON':on?'TAP TO RESUME MUSIC':'♫ TURN MUSIC ON';button.setAttribute('aria-pressed',String(playing()));};
  const select=()=>scene==='won'?'escape':scene==='chapel'?'chapel':scene==='graveyard'?'graveyard':scene==='garage'?'garage':'night';
@@ -26,23 +26,41 @@ export function music(button,readScene=()=> 'office'){
   if((track==='chapel'||track==='escape')&&note[0])scheduleNote(ctx,note[0]+12,next,duration*.85,.025,'sine');
   next+=duration;step++;
  }}
- async function toggle(){
-  if(busy)return;busy=true;
+ function toggle(){
+  const id=++attempt;clearInterval(watch);clearTimeout(deadline);
   try{
    const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw Error('Unsupported');
-   // Safari can route Web Audio as ambient sound; playback is the intended mode.
    try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch{}
    if(!ctx){ctx=new Audio();ctx.addEventListener('statechange',()=>{label();describe();});}
-   if(!playing()){
-    button.textContent='STARTING MUSIC…';
-    // Resume directly inside the user's gesture, including a second-finger tap.
-    await ctx.resume();on=true;clearInterval(timer);next=ctx.currentTime+.03;timer=setInterval(tick,70);tick();
-   }else{on=false;clearInterval(timer);await ctx.suspend();}
-   label();describe();button.blur();
-  }catch{on=false;clearInterval(timer);button.textContent='TAP TO RETRY AUDIO';button.setAttribute('aria-pressed','false');}
-  finally{busy=false;}
+   if(playing()){
+    on=false;busy=false;clearInterval(timer);label();describe();
+    Promise.resolve(ctx.suspend()).catch(()=>{});return;
+   }
+   on=true;busy=true;let started=false;button.textContent='STARTING MUSIC…';
+   const finish=()=>{
+    if(id!==attempt)return;
+    busy=false;clearInterval(watch);clearTimeout(deadline);
+    if(ctx.state==='running'&&!started){started=true;clearInterval(timer);next=ctx.currentTime+.03;timer=setInterval(tick,70);tick();}
+    label();describe();button.blur();
+   };
+   const check=()=>{if(id===attempt&&ctx.state==='running')finish();};
+   // Do not await resume: Safari can leave its promise pending indefinitely,
+   // including when the context has already started. State is authoritative.
+   const resumed=ctx.resume();
+   // Prime Web Audio synchronously inside the trusted touchend/click gesture.
+   const unlock=ctx.createBufferSource();unlock.buffer=ctx.createBuffer(1,1,ctx.sampleRate);unlock.connect(ctx.destination);unlock.start(0);
+   watch=setInterval(check,50);deadline=setTimeout(finish,2000);
+   Promise.resolve(resumed).then(check).catch(()=>{if(id===attempt)finish();});
+   check();
+  }catch{busy=false;on=false;clearInterval(watch);clearTimeout(deadline);clearInterval(timer);button.textContent='TAP TO RETRY AUDIO';button.setAttribute('aria-pressed','false');}
  }
- button.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'){e.preventDefault();lastTouch=performance.now();toggle();}});
+ // Try both gesture edges: Safari may require touchend, while other browsers
+ // unlock earlier. A stalled touch-down request never blocks the touchend retry.
+ button.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'){touchWasPlaying=playing();lastTouch=performance.now();if(!touchWasPlaying)toggle();}});
+ button.addEventListener('touchend',e=>{
+  const r=button.getBoundingClientRect(),touch=Array.from(e.changedTouches).find(t=>t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom);
+  if(!touch)return;e.preventDefault();lastTouch=performance.now();if(touchWasPlaying||!playing())toggle();
+ },{passive:false});
  button.onclick=e=>{if(e.detail!==0&&performance.now()-lastTouch<700)return;toggle();};
  const update=(nextScene,isDanger=false)=>{scene=nextScene;danger=isDanger;const desired=select();if(track!==desired){track=desired;step=0;next=ctx?ctx.currentTime+.08:0;}describe();};
  const note=midi=>{if(on&&ctx?.state==='running')scheduleNote(ctx,midi,ctx.currentTime,.35,.045,'sine');};
