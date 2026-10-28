@@ -15,20 +15,38 @@ export function scheduleNote(ctx,midi,start,duration,volume=.04,type='triangle')
  gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(volume,start+.015);gain.gain.exponentialRampToValueAtTime(.0001,start+Math.max(.04,duration));osc.connect(gain).connect(ctx.destination);osc.start(start);osc.stop(start+duration+.04);
 }
 export function music(button,readScene=()=> 'office'){
- let ctx,on=false,track='night',step=0,next=0,scene='office',danger=false,timer;
- const label=()=>{button.textContent=on?'♫ MUSIC ON':'♫ MUSIC OFF';button.setAttribute('aria-pressed',String(on));};
+ let ctx,on=false,track='night',step=0,next=0,scene='office',danger=false,timer,lastTouch=-Infinity,busy=false;
+ const playing=()=>on&&ctx?.state==='running';
+ const label=()=>{button.textContent=playing()?'♫ MUSIC ON':on?'TAP TO RESUME MUSIC':'♫ TURN MUSIC ON';button.setAttribute('aria-pressed',String(playing()));};
  const select=()=>scene==='won'?'escape':scene==='chapel'?'chapel':scene==='graveyard'?'graveyard':scene==='garage'?'garage':'night';
- const describe=()=>{const element=document.getElementById('musicTrack');if(element){const title=(on?'PLAYING · ':'MUSIC OFF · ')+TRACKS[track].title;if(element.textContent!==title)element.textContent=title;if(element.dataset.track!==track)element.dataset.track=track;}};
+ const describe=()=>{const element=document.getElementById('musicTrack');if(element){const title=(playing()?'PLAYING · ':on?'AUDIO PAUSED · ':'TAP MUSIC TO LISTEN · ')+TRACKS[track].title;if(element.textContent!==title)element.textContent=title;if(element.dataset.track!==track)element.dataset.track=track;}};
  function tick(){if(!on||!ctx||ctx.state!=='running')return;while(next<ctx.currentTime+.12){const t=TRACKS[track],note=t.notes[step%t.notes.length],beat=track==='chapel'?.43:track==='escape'?.4:danger?.24:.34,duration=note[1]*beat;
-  scheduleNote(ctx,note[0],Math.max(next,ctx.currentTime),duration*.87,.028,track==='chapel'||track==='escape'?'sine':'triangle');
-  if(step%4===0)scheduleNote(ctx,t.bass,next,Math.max(.1,duration),.021,'triangle');
-  if((track==='chapel'||track==='escape')&&note[0])scheduleNote(ctx,note[0]+12,next,duration*.85,.009,'sine');
+  scheduleNote(ctx,note[0],Math.max(next,ctx.currentTime),duration*.87,.10,track==='chapel'||track==='escape'?'sine':'triangle');
+  if(step%4===0)scheduleNote(ctx,t.bass,next,Math.max(.1,duration),.06,'triangle');
+  if((track==='chapel'||track==='escape')&&note[0])scheduleNote(ctx,note[0]+12,next,duration*.85,.025,'sine');
   next+=duration;step++;
  }}
- button.onclick=async()=>{try{ctx??=new AudioContext();if(!on){await ctx.resume();on=true;next=ctx.currentTime+.03;timer=setInterval(tick,70);tick();}else{on=false;clearInterval(timer);await ctx.suspend();}label();describe();button.blur();}catch{button.textContent='Audio unavailable';}};
+ async function toggle(){
+  if(busy)return;busy=true;
+  try{
+   const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)throw Error('Unsupported');
+   // Safari can route Web Audio as ambient sound; playback is the intended mode.
+   try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch{}
+   if(!ctx){ctx=new Audio();ctx.addEventListener('statechange',()=>{label();describe();});}
+   if(!playing()){
+    button.textContent='STARTING MUSIC…';
+    // Resume directly inside the user's gesture, including a second-finger tap.
+    await ctx.resume();on=true;clearInterval(timer);next=ctx.currentTime+.03;timer=setInterval(tick,70);tick();
+   }else{on=false;clearInterval(timer);await ctx.suspend();}
+   label();describe();button.blur();
+  }catch{on=false;clearInterval(timer);button.textContent='TAP TO RETRY AUDIO';button.setAttribute('aria-pressed','false');}
+  finally{busy=false;}
+ }
+ button.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'){e.preventDefault();lastTouch=performance.now();toggle();}});
+ button.onclick=e=>{if(e.detail!==0&&performance.now()-lastTouch<700)return;toggle();};
  const update=(nextScene,isDanger=false)=>{scene=nextScene;danger=isDanger;const desired=select();if(track!==desired){track=desired;step=0;next=ctx?ctx.currentTime+.08:0;}describe();};
  const note=midi=>{if(on&&ctx?.state==='running')scheduleNote(ctx,midi,ctx.currentTime,.35,.045,'sine');};
  const cue=()=>{if(on&&ctx?.state==='running'){scheduleNote(ctx,36,ctx.currentTime,.35,.055,'sawtooth');scheduleNote(ctx,37,ctx.currentTime+.16,.3,.035,'triangle');}};
- document.addEventListener('visibilitychange',()=>{if(!ctx||!on)return;if(document.hidden)ctx.suspend();else{ctx.resume();next=ctx.currentTime+.05;}});
- update(readScene());return {update,note,cue};
+ document.addEventListener('visibilitychange',()=>{if(!ctx||!on)return;if(document.hidden)ctx.suspend();else{next=ctx.currentTime+.05;ctx.resume().catch(()=>{label();describe();});}});
+ label();update(readScene());return {update,note,cue};
 }
